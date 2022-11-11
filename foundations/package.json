@@ -1,0 +1,21 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "- las variblaes pueden ser de varios tipos, por ejemplo \"let cosa: number | string | boolean = \"hola\" \"\r - Si no indicas el tipado, se auto indica,esto es llamado inferencia de tipos",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valerepetto14/TypeScript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/valerepetto14/TypeScript/issues"
+  },
+  "homepage": "https://github.com/valerepetto14/TypeScript#readme"
+}
