@@ -1,5 +1,9 @@
 # Learning Typescript
 
+## ¿Qué es Typescript?
+Typescript es un lenguaje de programación que se compila a Javascript. Es un superconjunto de Javascript, es decir, que todo lo que se puede hacer en Javascript se puede hacer en Typescript, pero Typescript tiene más funcionalidades que Javascript.
+
+## datos
 - las variblaes pueden ser de varios tipos, por ejemplo "let cosa: number | string | boolean = "hola" "
 - Si no indicas el tipado, se auto indica,esto es llamado inferencia de tipos
 - type asertion , si no sabemos el valor de un tipo podemos hacer un cast de la variable y tratarla como queremos
