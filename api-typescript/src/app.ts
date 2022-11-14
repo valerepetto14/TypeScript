@@ -1,16 +1,15 @@
-import express from "express";
+import {Request, Response} from "express";
+import express from "express"
 const app = express()
 
 
 //import de rutas
 import auth from "./routes/auth"
-//middlewares
+    //middlewares
 app.use(express.json())
 app.use("/", auth)
 
-
-
-app.get("/",(req,res)=>{
+app.get("/",(req:Request,res:Response)=>{
     res.send("holaaaaaa")
 })
 
