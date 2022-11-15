@@ -13,8 +13,7 @@ const book: Book = {
     title:"harry potter",
     author:"valentin repetto",
     coAuthor:"valentin repetto"
-} 
-
+}
 
 //__________________________________________
 
