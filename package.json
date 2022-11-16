@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "dynamoose": "^3.1.0"
+  }
+}
