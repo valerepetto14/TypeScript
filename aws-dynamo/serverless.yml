@@ -1,0 +1,39 @@
+service: aws-dynamo
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: sa-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:         
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:CreateTable
+      Resource: '*'
+
+functions:
+  hello:
+    handler: src/Users.hello
+    events:
+      - httpApi:
+          path: /
+          method: get
+  register:
+    handler: src/Users.register
+    events:
+      - httpApi:
+          path: /register
+          method: post
+  listUsers:
+    handler: src/Users.getUsers
+    events:
+      - httpApi:
+          path: /users
+          method: get
