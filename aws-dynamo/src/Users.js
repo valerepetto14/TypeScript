@@ -8,9 +8,9 @@ module.exports.hello = async (event) => {
   return {
     statusCode: 200,
     Headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: { message:"hola" }
+    body: { message: "hola" },
   };
 };
 
@@ -39,11 +39,11 @@ module.exports.register = async (event, context, callback) => {
 };
 
 module.exports.getUsers = async (event, context, callback) => {
-  const users = await User.scan().exec()
+  const users = await User.scan().exec();
+  const [error, data] = await resolve(User.scan().exec());
+  if (error) callback(null, handlerError(500, "hola"));
   return {
     statusCode: 200,
-    body: JSON.stringify(users),
+    body: JSON.stringify(data),
   };
 };
-
-
