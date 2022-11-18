@@ -1,6 +1,7 @@
 import * as dynamoose from 'dynamoose';
+import {Schema, Table} from 'dynamoose';
 
-const userSchema = new dynamoose.Schema(
+const userSchema = new Schema(
   {
     id: {
       type: String,
@@ -10,6 +11,8 @@ const userSchema = new dynamoose.Schema(
     username: {
       type: String,
       required: true,
+      rangeKey: true,
+      index:true
     },
     password: {
       type:String,
@@ -26,5 +29,5 @@ const userSchema = new dynamoose.Schema(
 );
 
 export const User = dynamoose.model('users', userSchema,{
-  create: false
+  create: true
 })

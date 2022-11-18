@@ -24,6 +24,6 @@ export const verifyIfUserExist = async (username:string):Promise<string> => {
         }
         return 'username available';
     } catch (error) {
-        return "error"
+        return JSON.stringify({error})
     }
 }

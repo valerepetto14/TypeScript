@@ -1,12 +1,25 @@
 "use strict";
-import { Context, APIGatewayProxyCallback, APIGatewayEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { v4 } from 'uuid'
+import {
+  Context,
+  APIGatewayProxyCallback,
+  APIGatewayEvent,
+  APIGatewayProxyResult,
+  APIGatewayProxyEvent,
+} from "aws-lambda";
+import { v4 } from "uuid";
 import { User } from "../schemas/Users";
-import { resolve, handlerError , verifyIfUserExist } from "./functions";
-import bcrypt from 'bcryptjs';
-// 
+import { resolve, handlerError, verifyIfUserExist } from "./functions";
+import bcrypt from "bcryptjs";
+import { user, userAuth } from "./types";
+import dotenv from "dotenv";
+dotenv.config();
+//
 
-module.exports.hello = async (event: APIGatewayEvent, context: Context, callback: APIGatewayProxyCallback): Promise<APIGatewayProxyResult> => {
+export const hello = async (
+  event: APIGatewayEvent,
+  context: Context,
+  callback: APIGatewayProxyCallback
+): Promise<APIGatewayProxyResult> => {
   return {
     statusCode: 200,
     body: JSON.stringify(
@@ -19,51 +32,87 @@ module.exports.hello = async (event: APIGatewayEvent, context: Context, callback
   };
 };
 
-module.exports.register = async (event: APIGatewayEvent, context: Context, callback: APIGatewayProxyCallback): Promise<APIGatewayProxyResult> => {
-  const [username, password, rol]:string = JSON.parse(event.body as string)
-  if (!username || !password || !rol) {
-   return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "username, password and rol are required"
-      })
-   }
-  }
-  const user:string = await verifyIfUserExist(username);
-  if (user === 'error') {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({
-        message: "error"
-      })
+export const register = async (
+  event: APIGatewayProxyEvent,
+  context: Context,
+  callback: APIGatewayProxyCallback
+): Promise<APIGatewayProxyResult> => {
+  try {
+    if (!event.body) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "body null",
+        }),
+      };
     }
-  }
-  if (user === 'username already exist') {
+    const datos: user = JSON.parse(event.body);
+    if (!datos.username || !datos.password || !datos.rol) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "missing data",
+        }),
+      };
+    }
+    const { username, password, rol } = datos;
+    const userExist: string = await verifyIfUserExist(username);
+    if (userExist === "error") {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "error",
+        }),
+      };
+    }
+    if (userExist === "username already exist") {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "username already exist",
+        }),
+      };
+    }
+    await User.create({
+      id: v4(),
+      username,
+      password: bcrypt.hashSync(datos.password, 10),
+      rol,
+    });
     return {
-      statusCode: 400,
+      statusCode: 200,
       body: JSON.stringify({
-        message: "username already exist"
-      })
-   }
+        data: {
+          username,
+          rol,
+        },
+      }),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error }),
+    };
   }
-  await User.create({
-    id: v4(),
-    username,
-    password: bcrypt.hashSync(password, 10),
-    rol
-  })
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      data: {
-        username,
-        rol
-      }
-    })
-  }
-}
+};
 
-module.exports.listUsers = async (event: APIGatewayEvent, context: Context, callback: APIGatewayProxyCallback): Promise<APIGatewayProxyResult> => {
-  const data:object = await User.scan().exec();
-  console.log(data);
-}
+export const listUsers = async (
+  event: APIGatewayProxyEvent,
+  context: Context,
+  callback: APIGatewayProxyCallback
+): Promise<APIGatewayProxyResult> => {
+  try {
+    const data = await User.scan().exec();
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: error,
+      }),
+    };
+  }
+};
