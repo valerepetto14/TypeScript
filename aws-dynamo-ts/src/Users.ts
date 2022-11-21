@@ -5,6 +5,7 @@ import {
   APIGatewayEvent,
   APIGatewayProxyResult,
   APIGatewayProxyEvent,
+  APIGatewayProxyHandler
 } from "aws-lambda";
 import { v4 } from "uuid";
 import { User } from "../schemas/Users";
@@ -15,7 +16,7 @@ import dotenv from "dotenv";
 dotenv.config();
 //
 
-export const hello = async (
+export const hello:APIGatewayProxyHandler = async (
   event: APIGatewayEvent,
   context: Context,
   callback: APIGatewayProxyCallback
@@ -32,7 +33,7 @@ export const hello = async (
   };
 };
 
-export const register = async (
+export const registe:APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
   context: Context,
   callback: APIGatewayProxyCallback
@@ -96,7 +97,7 @@ export const register = async (
   }
 };
 
-export const listUsers = async (
+export const listUsers:APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
   context: Context,
   callback: APIGatewayProxyCallback
@@ -116,3 +117,37 @@ export const listUsers = async (
     };
   }
 };
+
+export const getUserByUsername:APIGatewayProxyHandler = async( 
+  event: APIGatewayProxyEvent,
+  context: Context,
+  callback: APIGatewayProxyCallback
+): Promise<APIGatewayProxyResult> => {
+  try{
+    if (!event.pathParameters){
+      return {
+        statusCode:400,
+        body:JSON.stringify({
+          Error: "Missing data"
+        })
+      }
+    }
+    const username = event.pathParameters.username;
+    const user = await User.query("username").eq(username).exec();
+    if (user){
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        data : user
+      })
+    }}
+    return {
+      statusCode:400,
+      body: JSON.stringify({
+
+      })
+    }
+  }catch(error){
+    throw error
+  }
+}

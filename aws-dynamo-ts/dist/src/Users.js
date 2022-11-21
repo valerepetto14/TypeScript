@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listUsers = exports.register = exports.hello = void 0;
+exports.getUserByUsername = exports.listUsers = exports.register = exports.hello = void 0;
 const uuid_1 = require("uuid");
 const Users_1 = require("../schemas/Users");
 const functions_1 = require("./functions");
@@ -108,3 +108,33 @@ const listUsers = (event, context, callback) => __awaiter(void 0, void 0, void 0
     }
 });
 exports.listUsers = listUsers;
+const getUserByUsername = (event, context, callback) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (!event.pathParameters) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    Error: "Missing data"
+                })
+            };
+        }
+        const username = event.pathParameters.username;
+        const user = yield Users_1.User.query("username").eq(username).exec();
+        if (user) {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({
+                    data: user
+                })
+            };
+        }
+        return {
+            statusCode: 400,
+            body: JSON.stringify({})
+        };
+    }
+    catch (error) {
+        throw error;
+    }
+});
+exports.getUserByUsername = getUserByUsername;

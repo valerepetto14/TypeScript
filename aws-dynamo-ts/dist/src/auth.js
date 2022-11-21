@@ -13,7 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = void 0;
+const Users_1 = require("../schemas/Users");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 dotenv_1.default.config();
 const login = (event, context, callback) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -26,34 +29,41 @@ const login = (event, context, callback) => __awaiter(void 0, void 0, void 0, fu
             };
         }
         const datos = JSON.parse(event.body);
-        // if (!datos.username || !datos.password) {
-        //   return {
-        //     statusCode: 400,
-        //     body: JSON.stringify({
-        //       message: "missing data",
-        //     }),
-        //   };
-        // }
-        // const { username, password} = datos;
-        // const checkUser = await User.query('username').eq(username).exec();
-        // if(checkUser.length > 0){
-        //   return {
-        //     statusCode:400,
-        //     body: JSON.stringify({
-        //       message: 'failed credentials'
-        //     })
-        //   }
-        // }
-        // const [passwordBD] = checkUser;
-        // const comparePass = await bcrypt.compare(password, passwordBD as any)
-        // if(comparePass){
-        //   return {
-        //     statusCode: 200,
-        //     body: JSON.stringify({
-        //       status:'login succesful'
-        //     })
-        //   }
-        // }
+        if (!datos.username || !datos.password) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    message: "missing data",
+                }),
+            };
+        }
+        const user = datos;
+        const userBD = yield Users_1.User.query('username').eq(user.username).exec();
+        if (userBD.length === 0) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({
+                    message: 'failed credentials'
+                })
+            };
+        }
+        const comparePass = yield bcryptjs_1.default.compare(user.password, userBD[0].password);
+        if (comparePass) {
+            const payload = {
+                "name": userBD[0].username,
+                "rol": userBD[0].rol,
+            };
+            const token = jsonwebtoken_1.default.sign(payload, process.env.SECRET);
+            return {
+                statusCode: 200,
+                headers: {
+                    "Set-cookie": `token=${token}; HttpOnly; Secure; SameSite=Strict`
+                },
+                body: JSON.stringify({
+                    message: 'success login',
+                })
+            };
+        }
         return {
             statusCode: 400,
             body: JSON.stringify({
@@ -65,7 +75,7 @@ const login = (event, context, callback) => __awaiter(void 0, void 0, void 0, fu
         return {
             statusCode: 500,
             body: JSON.stringify({
-                error: "errro",
+                error: error,
             }),
         };
     }

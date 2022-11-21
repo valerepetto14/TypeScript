@@ -1,6 +1,9 @@
 service: aws-dynamo-ts
 frameworkVersion: '3'
 
+plugins:
+  - serverless-offline
+
 provider:
   name: aws
   runtime: nodejs14.x
@@ -29,17 +32,29 @@ functions:
     handler: dist/src/Users.register
     events:
       - httpApi:
-          path: /register
+          path: /users/register
           method: post
   login:
     handler: dist/src/auth.login
     events:
       - httpApi:
-          path: /login
-          method: get
+          path: /users/login
+          method: post
   listUsers:
     handler: dist/src/Users.listUsers
     events:
       - httpApi:
           path: /users
+          method: get
+  getUsersByUsernane:
+    handler: dist/src/Users.getUserByUsername
+    events:
+      - httpApi:
+          path: /users/{username}
+          method: get
+  getUsersByUsernane:
+    handler: dist/src/tasks.createTask
+    events:
+      - httpApi:
+          path: /tasks/create
           method: get

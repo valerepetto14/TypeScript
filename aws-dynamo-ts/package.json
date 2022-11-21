@@ -12,11 +12,15 @@
   "dependencies": {
     "@types/aws-lambda": "^8.10.108",
     "@types/bcryptjs": "^2.4.2",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/node": "^18.11.9",
     "@types/uuid": "^8.3.4",
+    "aws-cdk-lib": "^2.51.1",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.0.3",
     "dynamoose": "^3.1.0",
+    "jsonwebtoken": "^8.5.1",
+    "serverless-offline": "^11.5.0",
     "uuid": "^9.0.0"
   }
 }
